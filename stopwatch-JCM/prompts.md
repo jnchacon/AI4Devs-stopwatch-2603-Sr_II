@@ -24,9 +24,9 @@ Criterios técnicos:
 Criterios funcionales:
 - La pagina comienza el el cronómetro en 0.
 - Cuando el usuario pulsa "Start" el cronómetro comienza a correr.
-- Cuando el usuario pula "Stop" el cronómetro se para.
+- Cuando el usuario pulsa "Stop" el cronómetro se para.
 - Si el usuario pulsa "Start" mientras el cronómetro está corriendo, comienza a contar desde 0 de nuevo.
-- Si el usuario pulsta "Stop" con el cronómetro detenido no pasa nada.
+- Si el usuario pulsa "Stop" con el cronómetro detenido no pasa nada.
 
 Diseño:
 - Te adjunto el archivo stopwatch.png para que lo tengas de referencia para el diseño.
@@ -35,9 +35,9 @@ Preguntame si necesitas más información para construir la aplicación web.
 
 ### Iteraciones
 
-No hizo comentarios ni preguntas, directamente arrojó la dolución correcta.
+No hizo comentarios ni preguntas, directamente arrojó la solución correcta.
 
 ### Comentarios
 
-Me advitió que sólo podía arrojarme el `.html` porque necesitaba que el JavaScript estuviera dentro del mismo para correr, pero la adaptación en mi ordenador fue trivial.
+Me advirtió que solo podía arrojarme el `.html` porque necesitaba que el JavaScript estuviera dentro del mismo para correr, pero la adaptación en mi ordenador fue trivial.
 
