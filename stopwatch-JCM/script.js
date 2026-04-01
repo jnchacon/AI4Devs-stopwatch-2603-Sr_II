@@ -1,82 +1,87 @@
 /**
- * Clase encargada ÚNICAMENTE de la lógica de tiempo y estado.
- * (Single Responsibility Principle)
+ * Clase encargada exclusivamente de la lógica del tiempo y estado del cronómetro.
+ * Cumple con el Principio de Responsabilidad Única (SRP) de SOLID.
+ * Utiliza performance.now() y requestAnimationFrame() para alta precisión.
  */
-class StopWatchLogic {
+class StopwatchLogic {
     constructor(onTickCallback) {
-        // Callback para inyectar la dependencia de la UI (Dependency Inversion/Open-Closed)
-        this.onTick = onTickCallback; 
+        // Callback para inyectar la dependencia de actualización de la UI
+        this.onTickCallback = onTickCallback; 
         this.isRunning = false;
         this.startTime = 0;
         this.elapsedTime = 0;
         this.animationFrameId = null;
     }
 
+    /**
+     * Inicia o reinicia el cronómetro desde 0.
+     * Registra log de información al iniciar.
+     */
     start() {
-        try {
-            if (this.isRunning) {
-                // Requisito: Si pulsa Start mientras corre, comienza desde 0.
-                console.log("[LOG] Reiniciando el cronómetro desde 0...");
-                this.elapsedTime = 0;
-                this.startTime = performance.now();
-            } else {
-                // Inicio normal
-                console.log("[LOG] Iniciando el cronómetro...");
-                this.isRunning = true;
-                // Ajustamos el startTime por si hubiera tiempo pausado acumulado 
-                // (aunque tu lógica pide que si se detiene y luego start, empieza de 0. 
-                // Modificado abajo para cumplir estrictamente tus reglas).
-                
-                // NOTA: Según tus reglas "Si pulsa Start mientras corre, comienza a contar desde 0 de nuevo".
-                // Asumiremos que si estaba detenido y pulsa Start, también empieza de 0 basado en un uso típico,
-                // o retoma. Lo haré para que SIEMPRE que se pulse Start, empiece desde 0 para mantener simplicidad y cumplir tu regla.
-                this.elapsedTime = 0; 
-                this.startTime = performance.now();
-                this._tick(); // Iniciamos el bucle
-            }
-        } catch (error) {
-            console.error("[ERROR] Excepción al intentar iniciar el cronómetro:", error);
+        if (this.isRunning) {
+            // Criterio de Aceptación AC3: Reinicia si ya está corriendo
+            this.elapsedTime = 0;
+            this.startTime = performance.now();
+            console.info("[Log] Cronómetro reiniciado desde 0.");
+        } else {
+            // Inicio normal
+            this.isRunning = true;
+            this.elapsedTime = 0; 
+            this.startTime = performance.now();
+            console.info("[Log] Cronómetro iniciado desde 0.");
+            this._tick(); // Inicia el bucle de actualización
         }
     }
 
+    /**
+     * Detiene el cronómetro congelando el tiempo.
+     * Registra log de información al detener.
+     * Ignora la acción si ya está detenido (AC4).
+     */
     stop() {
-        try {
-            if (!this.isRunning) {
-                // Requisito: Si pulsa Stop estando detenido, no pasa nada.
-                console.log("[LOG] Stop ignorado. El cronómetro ya estaba detenido.");
-                return;
-            }
-            console.log("[LOG] Deteniendo el cronómetro...");
-            this.isRunning = false;
-            cancelAnimationFrame(this.animationFrameId);
-        } catch (error) {
-            console.error("[ERROR] Excepción al intentar detener el cronómetro:", error);
+        if (!this.isRunning) {
+            // Criterio de Aceptación AC4: Ignora si ya está detenido
+            return;
         }
+        this.isRunning = false;
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+        console.info("[Log] Cronómetro detenido.");
     }
 
-    // Método privado (convención) que actúa como bucle de control
+    /**
+     * Bucle de actualización de alta frecuencia que calcula el tiempo transcurrido.
+     * Se ejecuta recursivamente usando requestAnimationFrame().
+     * @private
+     */
     _tick() {
         if (!this.isRunning) return;
 
-        try {
-            // Calculamos el delta de tiempo exacto
-            this.elapsedTime = performance.now() - this.startTime;
-            
-            // Formateamos y pasamos los datos a la UI
-            const formattedTime = this._formatTime(this.elapsedTime);
-            this.onTick(formattedTime);
+        // Cálculo preciso del tiempo transcurrido
+        this.elapsedTime = performance.now() - this.startTime;
+        
+        // Formateo de los datos crudos a unidades legibles
+        const timeData = this._formatTime(this.elapsedTime);
+        
+        // Ejecución del callback inyectado para actualizar la UI
+        this.onTickCallback(timeData);
 
-            // Solicitamos el próximo frame recursivamente
-            this.animationFrameId = requestAnimationFrame(this._tick.bind(this));
-        } catch (error) {
-            console.error("[ERROR] Excepción en el ciclo de actualización (tick):", error);
-            this.stop(); // Parada de seguridad
-        }
+        // Solicitud del próximo frame de animación
+        this.animationFrameId = requestAnimationFrame(this._tick.bind(this));
     }
 
-    // Método de utilidad para convertir milisegundos a formato legible
+    /**
+     * Convierte milisegundos crudos en un objeto formateado con horas, minutos, segundos y milisegundos.
+     * Asegura el padding de ceros a la izquierda.
+     * @param {number} ms - Tiempo transcurrido en milisegundos.
+     * @returns {Object} Objeto con las unidades de tiempo formateadas como strings.
+     * @private
+     */
     _formatTime(ms) {
         const totalSeconds = Math.floor(ms / 1000);
+        
         const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
         const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
         const seconds = String(totalSeconds % 60).padStart(2, '0');
@@ -87,45 +92,72 @@ class StopWatchLogic {
 }
 
 /**
- * Clase encargada ÚNICAMENTE de interactuar con el DOM.
+ * Clase encargada exclusivamente de manejar la interfaz de usuario (DOM).
+ * Cumple con SOLID al separar la manipulación del DOM de la lógica de tiempo.
  */
-class StopWatchUI {
+class StopwatchUI {
     constructor() {
-        // Referencias al DOM
-        this.timeDisplay = document.getElementById('time-display');
-        this.msDisplay = document.getElementById('ms-display');
-        this.btnStart = document.getElementById('btn-start');
-        this.btnStop = document.getElementById('btn-stop');
+        // Caché de elementos del DOM para optimizar accesos
+        this.displayElement = document.getElementById('display');
+        this.msDisplayElement = document.getElementById('ms-display');
+        this.startBtn = document.getElementById('startBtn');
+        this.stopBtn = document.getElementById('stopBtn');
 
-        // Instanciamos la lógica inyectando el método de actualización
-        this.stopWatchLogic = new StopWatchLogic(this.updateDisplay.bind(this));
+        // Instanciación de la lógica, inyectando el método de actualización de la UI
+        // Envolvemos la actualización en un try...catch como se solicitó
+        this.stopwatchLogic = new StopwatchLogic((timeData) => {
+            this._safeUpdateDisplay(timeData);
+        });
 
         this._bindEvents();
-        console.log("[LOG] Interfaz de usuario inicializada. Cronómetro en 0.");
+        console.info("[Log] Interfaz de usuario inicializada. Esperando interacción.");
     }
 
+    /**
+     * Vincula los event listeners a los botones de control.
+     * Enuelve los handlers en try...catch para manejo robusto de excepciones.
+     * @private
+     */
     _bindEvents() {
-        this.btnStart.addEventListener('click', () => {
-            this.stopWatchLogic.start();
+        this.startBtn.addEventListener('click', () => {
+            try {
+                this.stopwatchLogic.start();
+            } catch (error) {
+                console.error("[Error] Excepción capturada al intentar iniciar el cronómetro:", error);
+            }
         });
 
-        this.btnStop.addEventListener('click', () => {
-            this.stopWatchLogic.stop();
+        this.stopBtn.addEventListener('click', () => {
+            try {
+                this.stopwatchLogic.stop();
+            } catch (error) {
+                console.error("[Error] Excepción capturada al intentar detener el cronómetro:", error);
+            }
         });
     }
 
-    // Método que recibe los datos procesados y los pinta en pantalla
-    updateDisplay(timeData) {
+    /**
+     * Actualiza los elementos del DOM de forma segura capturando posibles excepciones.
+     * @param {Object} timeData - Objeto con los strings de tiempo formateados.
+     * @private
+     */
+    _safeUpdateDisplay(timeData) {
         try {
-            this.timeDisplay.textContent = `${timeData.hours}:${timeData.minutes}:${timeData.seconds}`;
-            this.msDisplay.textContent = timeData.milliseconds;
+            this.displayElement.textContent = `${timeData.hours}:${timeData.minutes}:${timeData.seconds}`;
+            this.msDisplayElement.textContent = timeData.milliseconds;
         } catch (error) {
-            console.error("[ERROR] Excepción al actualizar el DOM:", error);
+            // Registro detallado del error en consola como se solicitó
+            console.error("[Error] Excepción capturada durante la actualización del DOM:", error);
+            this.stopwatchLogic.stop(); // Parada de seguridad de la lógica si falla la UI
         }
     }
 }
 
-// Inicializamos la aplicación cuando el DOM esté completamente cargado
+// Inicialización de la aplicación una vez que el DOM está completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
-    new StopWatchUI();
+    try {
+        new StopwatchUI();
+    } catch (error) {
+        console.error("[Error] Excepción fatal durante la inicialización de la aplicación:", error);
+    }
 });

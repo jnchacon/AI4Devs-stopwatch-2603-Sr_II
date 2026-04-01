@@ -4,56 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cronómetro - StopWatch</title>
-    <!-- Tailwind CSS por CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Importamos una fuente limpia que se asemeja a la de tu diseño */
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            /* Prevenir scroll horizontal en móviles */
-            overflow-x: hidden;
+        /* Importación de fuente limpia para el display */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        .font-mono-chrono {
+            font-family: 'Roboto Mono', monospace;
         }
     </style>
 </head>
-<body class="bg-white min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- Contenedor principal de la aplicación -->
-    <main class="w-full max-w-4xl flex flex-col items-center gap-8 sm:gap-12">
+    <main class="w-full max-w-lg md:max-w-2xl lg:max-w-4xl flex flex-col items-center gap-12 md:gap-16">
         
-        <!-- Display del Cronómetro (Basado en la imagen de referencia) -->
-        <div class="bg-[#EBF0FF] border-[6px] border-[#333333] rounded-[3rem] sm:rounded-[4rem] px-6 py-8 sm:px-16 sm:py-12 w-full flex justify-center items-end relative shadow-sm">
-            <div class="flex items-baseline relative">
-                <!-- Horas, Minutos, Segundos -->
-                <span id="time-display" class="text-6xl sm:text-8xl md:text-[9rem] font-medium leading-none tracking-tight text-[#000]">
+        <div class="bg-blue-50 border-[6px] md:border-[8px] border-gray-950 rounded-full px-8 py-10 md:px-16 md:py-14 w-full flex justify-center items-end relative shadow-lg">
+            <div class="flex items-baseline relative font-mono-chrono text-gray-950">
+                <span id="display" class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tighter">
                     00:00:00
                 </span>
-                <!-- Milisegundos -->
-                <span id="ms-display" class="text-2xl sm:text-4xl md:text-5xl font-medium text-[#000] absolute -bottom-2 -right-10 sm:-bottom-4 sm:-right-16 md:-bottom-2 md:-right-20">
+                <span id="ms-display" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium absolute -bottom-2 -right-12 sm:-bottom-3 sm:-right-14 md:-bottom-4 md:-right-16 lg:-bottom-5 lg:-right-20">
                     000
                 </span>
             </div>
         </div>
 
-        <!-- Contenedor de Botones -->
-        <div class="flex flex-col sm:flex-row gap-6 sm:gap-16 w-full justify-center items-center">
-            <!-- Botón Start -->
-            <button id="btn-start" class="w-full sm:w-auto min-w-[200px] sm:min-w-[250px] bg-[#6ee03f] hover:bg-[#5bc732] border-[5px] border-[#333333] rounded-2xl text-4xl sm:text-5xl font-medium px-8 py-4 transition-colors shadow-sm focus:outline-none focus:ring-4 focus:ring-green-300">
+        <div class="flex flex-col sm:flex-row gap-6 sm:gap-10 w-full justify-center items-center">
+            <button id="startBtn" class="w-full sm:w-auto min-w-[220px] md:min-w-[280px] bg-green-500 hover:bg-green-600 border-[5px] border-gray-950 rounded-2xl text-4xl md:text-5xl font-bold text-gray-950 px-10 py-5 transition-colors shadow-md focus:outline-none focus:ring-4 focus:ring-green-300">
                 Start
             </button>
             
-            <!-- Botón Stop -->
-            <button id="btn-stop" class="w-full sm:w-auto min-w-[200px] sm:min-w-[250px] bg-[#e6392b] hover:bg-[#cc3225] border-[5px] border-[#333333] rounded-2xl text-4xl sm:text-5xl font-medium px-8 py-4 transition-colors shadow-sm focus:outline-none focus:ring-4 focus:ring-red-300">
+            <button id="stopBtn" class="w-full sm:w-auto min-w-[220px] md:min-w-[280px] bg-red-600 hover:bg-red-700 border-[5px] border-gray-950 rounded-2xl text-4xl md:text-5xl font-bold text-gray-950 px-10 py-5 transition-colors shadow-md focus:outline-none focus:ring-4 focus:ring-red-300">
                 Stop
             </button>
         </div>
 
     </main>
 
-    <!-- 
-      SCRIPT: Lógica de la aplicación.
-      Diseñado para estar separado conceptualmente (SOLID).
-    -->
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
